@@ -1,25 +1,90 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+  return(
+    <Board />
+  )
 }
 
-export default App;
+export const Board=()=>{
+
+  const [squares,setSquares]=useState(Array(9).fill(null));
+  const [IsNext,setIsNext]=useState(true);
+
+  const handleClick=(index)=>{
+
+    if(calculateWinner(squares) || squares[index]){
+      return ;
+    }
+
+    const newSquares=squares.slice();
+    if(IsNext){
+      newSquares[index]='X';
+    }
+    else{
+      newSquares[index]='O';
+    }
+
+    setSquares(newSquares);
+    setIsNext(!IsNext);
+  }
+
+  let status;
+  const winner=calculateWinner(squares);
+
+  if(winner){
+    status="Winner is : "+winner;
+  }
+  else{
+    status="Next player is : "+(IsNext?"X":"O");
+  }
+
+  return(
+    <>
+    <div data-testid="status">{status}</div>
+   <div >
+      <div>
+        <div data-testid="gameBoard" >
+          <Square value={squares[0]} handleClick={()=>handleClick(0)}/>
+          <Square value={squares[1]} handleClick={()=>handleClick(1)}/>
+          <Square value={squares[2]} handleClick={()=>handleClick(2)}/>
+        </div>
+        <Square value={squares[3]} handleClick={()=>handleClick(3)}/>
+        <Square value={squares[4]} handleClick={()=>handleClick(4)}/>
+        <Square value={squares[5]} handleClick={()=>handleClick(5)}/>
+      </div>
+      <Square value={squares[6]} handleClick={()=>handleClick(6)}/>
+      <Square value={squares[7]} handleClick={()=>handleClick(7)}/>
+      <Square value={squares[8]} handleClick={()=>handleClick(8)}/>
+    </div>
+    </>
+  );
+};
+
+export const Square=({value,handleClick})=>{
+return <button onClick={handleClick} >{value}</button>
+};
+
+
+const calculateWinner=(squares)=>{
+  const lines=[
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6],
+  ];
+
+  for(let ind=0;ind<lines.length;ind++){
+    const [a,b,c]=lines[ind];
+    if(squares[a] && squares[b] === squares[c] && squares[c] === squares[a])
+    {
+      return squares[a];
+    }
+  }
+  return null;
+};
+
